@@ -23,3 +23,10 @@
   mkdir -p $HOME/ .kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(idc-g) $HOME/.kube/config
+
+## Step 4
+
+# On Master node
+
+kubectl apply -f https://docs.projectcalico.org/v3.20/manifests/calico.yml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.49.0/deploy/static/provider/baremetal/deploy.yaml
