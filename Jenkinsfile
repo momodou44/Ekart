@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('git checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/momodou44/Ekart.git'
+               // git branch: 'main', url: 'https://github.com/momodou44/Ekart.git'
+                echo 'passed'
             }
         }
         
@@ -19,12 +20,7 @@ pipeline {
                 
             }
         }
-        
-        stage('Hello') {
-            steps {
-                echo 'Hello World'
-            }
-        }
+   
         
         
     }
