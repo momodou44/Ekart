@@ -34,10 +34,16 @@ pipeline {
                }
             }
         }
-
-        stage('Code-Build') {
+        stage('Build') {
             steps {
-               sh "mvn clean package -Dskiptests=true"
+               sh "mvn package -DskipTests=true"
+            }
+        }
+
+        stage('OWASP Dependency Check') {
+            steps {
+               dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DC'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
    
