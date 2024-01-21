@@ -6,6 +6,10 @@ pipeline {
             
     }
 
+     environment{
+        SCANNER_HOME= tool 'sonar-scanner'
+    }
+
     stages {
         stage('git checkout') {
             steps {
@@ -18,6 +22,16 @@ pipeline {
             steps {
                 sh "mvn compile"
                 
+            }
+        }
+
+        stage('Sonar Analysis') {
+            steps {
+               withSonarQubeEnv('sonar-server'){
+                   sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Ekart-CICD \
+                   -Dsonar.java.binaries=. \
+                   -Dsonar.projectKey=Ekart-CICD '''
+               }
             }
         }
    
