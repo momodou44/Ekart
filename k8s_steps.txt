@@ -30,3 +30,100 @@
 
 kubectl apply -f https://docs.projectcalico.org/v3.20/manifests/calico.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.49.0/deploy/static/provider/baremetal/deploy.yaml
+
+#Create namespace 
+kubectl create namespace webapps
+
+##Step 5
+# On Master Node
+# Create a service account
+  vi sa.yml
+  copy :
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: jenkins
+          namespace: webapps
+
+  kubectl apply -f sa.yml
+
+#Create a role
+  vi role.yml
+  copy :
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: Role
+        metadata:
+          name: app-role
+          namespace: webapps
+        rules:
+          - apiGroups:
+                - ""
+                - apps
+                - autoscaling
+                - batch
+                - extensions
+                - policy
+                - rbac.authorization.k8s.io
+            resources:
+              - pods
+              - componentstatuses
+              - configmaps
+              - daemonsets
+              - deployments
+              - events
+              - endpoints
+              - horizontalpodautoscalers
+              - ingress
+              - jobs
+              - limitranges
+              - namespaces
+              - nodes
+              - pods
+              - persistentvolumes
+              - persistentvolumeclaims
+              - resourcequotas
+              - replicasets
+              - replicationcontrollers
+              - serviceaccounts
+              - services
+            verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+  kubectl apply -f role.yml
+
+# Bind the role to service account
+  vi assign.yml
+  copy:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: app-rolebinding
+        namespace: webapps 
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: Role
+        name: app-role 
+      subjects:
+      - namespace: webapps 
+        kind: ServiceAccount
+        name: jenkins 
+
+kubectl apply -f assign.yml
+
+
+##Generate a token
+
+#Create a secret
+  vi sec.yml
+  copy:
+    apiVersion: v1
+    kind: Secret
+    type: kubernetes.io/service-account-token
+    metadata:
+      name: mysecretname
+      annotations:
+        kubernetes.io/service-account.name: jenkins
+
+  kubectl apply -f sec.yml -n webapps
+
+# To view the token that we create
+  kubectl -n webapps describe secret mysecretname 
