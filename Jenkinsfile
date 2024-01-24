@@ -60,7 +60,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId:'docker-cred', toolName:'docker'){
-                        sh " docker build -t mamadoudev/ekart:last -f docker/Dockerfile ."
+                        sh " docker build -t mamadoudev/ekart:latest -f docker/Dockerfile ."
                         }
                     }
                 }
@@ -68,7 +68,7 @@ pipeline {
 
         stage('trivy scanner') {
             steps {
-               sh "trivy  image mamadoudev/ekart:lastest > trivy-report.txt "
+               sh "trivy  image mamadoudev/ekart:latest > trivy-report.txt "
             }
         }
 
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId:'docker-cred', toolName:'docker'){
-                        sh " docker push -t mamadoudev/ekart:last"
+                        sh " docker push -t mamadoudev/ekart:latest"
                         }
                     }
                 }
@@ -90,12 +90,5 @@ pipeline {
                 }
             }
         }
-
-        
-
-       
-   
-        
-        
     }
 }
