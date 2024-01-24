@@ -34,6 +34,7 @@ pipeline {
                }
             }
         }
+        
         stage('Build') {
             steps {
                sh "mvn package -DskipTests=true"
@@ -54,6 +55,43 @@ pipeline {
         }
             }
         }
+
+        stage('Docker Build & tag Docker image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId:'docker-cred', toolName:'docker'){
+                        sh " docker build -t mamadoudev/ekart:last -f docker/Dockerfile ."
+                        }
+                    }
+                }
+        }
+
+        stage('trivy scanner') {
+            steps {
+               sh "trivy  image mamadoudev/ekart:lastest > trivy-report.txt "
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId:'docker-cred', toolName:'docker'){
+                        sh " docker push -t mamadoudev/ekart:last"
+                        }
+                    }
+                }
+        }
+
+        stage('kubernetes Deploy'){
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://172.31.90.113:6443') {
+                    sh "kubectl apply -f deploymentservice.yml -n webapps"
+                    sh "kubectl get svc -n webapps"
+                }
+            }
+        }
+
+        
 
        
    
