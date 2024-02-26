@@ -16,6 +16,11 @@
 
   kubeadm init --pod-network-cidr=192.168.0.0/16
 
+# On Worker Node
+  kubeadm join 172.31.85.227:6443 --token 6v4hb7.0rajam5kxd550ra7 \
+    --discovery-token-ca-cert-hash sha256:2a553238a80d8d62cf1a16b9adb99795ee203bb7d23a01010fc7e452577b5bf2
+
+
 ## Step 3
 
 # On Master node
